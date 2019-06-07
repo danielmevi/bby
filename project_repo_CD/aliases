@@ -1,0 +1,18 @@
+# project places
+# Adjust at will the aliases shortcuts to cd's
+alias cdsrc "source $HOME/scripts/project_paths.sh src"
+alias cdproject "source $HOME/scripts/project_paths.sh main"
+alias cdhw "source $HOME/scripts/project_paths.sh hw"
+alias cdinclude "source $HOME/scripts/project_paths.sh include"
+alias cdcore "source $HOME/scripts/project_paths.sh core"
+alias cduncore "source $HOME/scripts/project_paths.sh uncore"
+alias cdbase "source $HOME/scripts/project_paths.sh base"
+alias cdmodel "source $HOME/scripts/project_paths.sh testmodel"
+alias cdunittests "source $HOME/scripts/project_paths.sh unittests"
+alias cdtargets "source $HOME/scripts/project_paths.sh targets"
+alias cdregression "source $HOME/scripts/project_paths.sh regression"
+alias cdcfg "source $HOME/scripts/project_paths.sh cfg"
+alias cdtests "source $HOME/scripts/project_paths.sh tests"
+alias cdsimics "source $HOME/scripts/project_paths.sh simics"
+alias cdroot "source $HOME/scripts/project_paths.sh root"
+
