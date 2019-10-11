@@ -21,3 +21,24 @@ This is a helper
 # Examples
 
 # Test
+## Install conan
+```
+mkdir build
+cd build
+conan intall .. compiler.libcxx=libstdc++11
+```
+
+## Generate Makefiles
+```
+cmake ..
+```
+
+## Compile
+```
+cmake --build .
+```
+
+## Run test
+```
+./bin/buffercast
+```

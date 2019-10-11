@@ -3,6 +3,7 @@
 //
 
 #include "buffer_cast.hpp"
+
 #include <iostream>
 
 #include "gtest/gtest.h"
@@ -48,4 +49,10 @@ TEST(InlineTest, Basic) {
     EXPECT_EQ(new_data, buffer[test_index]);
 }
 
+
 }
+
+//int main(int argc, char **argv) {
+//      ::testing::InitGoogleTest(&argc, argv);
+//        return RUN_ALL_TESTS();
+//}
