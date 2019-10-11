@@ -25,7 +25,7 @@ This is a helper
 ```
 mkdir build
 cd build
-conan intall .. compiler.libcxx=libstdc++11
+conan install .. -s compiler.libcxx=libstdc++11
 ```
 
 ## Generate Makefiles
