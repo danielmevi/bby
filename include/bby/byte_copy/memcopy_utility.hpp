@@ -1,14 +1,11 @@
-// Utility
+// Bby C++ Library - Memory copy utility Test
+//
+// Copyright TBD
 //
 
 #pragma once
 
-
-/// @name ByteCopy
-/// @brief Portable and well enough for production JLR function to copy built-in
-/// types into a byte buffer
-/// @param[out] destination
-/// @param[in] source
+// TODO: Add descritions
 template <class T>
 typename std::enable_if<std::is_trivial<T>::value>::type ByteCopy(
     gsl::span<uint8_t> destination, T const source)

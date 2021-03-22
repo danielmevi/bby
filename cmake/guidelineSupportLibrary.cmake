@@ -71,31 +71,31 @@ function(ccxt_add_native_visualizer_support)
 endfunction()
 
 function(ccxt_install_logic)
-    install(TARGETS CCXT EXPORT Corpsoft.CCXTConfig)
+    install(TARGETS CCXT EXPORT Community.CCXTConfig)
     install(
         DIRECTORY include/ccxt
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     )
     # Make library importable by other projects
-    install(EXPORT Corpsoft.CCXTConfig NAMESPACE Corpsoft.CCXT:: DESTINATION ${CMAKE_INSTALL_DATADIR}/cmake/Corpsoft.CCXT)
-    export(TARGETS CCXT NAMESPACE Corpsoft.CCXT:: FILE Corpsoft.CCXTConfig.cmake)
+    install(EXPORT Community.CCXTConfig NAMESPACE Community.CCXT:: DESTINATION ${CMAKE_INSTALL_DATADIR}/cmake/Community.CCXT)
+    export(TARGETS CCXT NAMESPACE Community.CCXT:: FILE Community.CCXTConfig.cmake)
 
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Corpsoft.CCXTConfigVersion.cmake DESTINATION ${CMAKE_INSTALL_DATADIR}/cmake/Corpsoft.CCXT)
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Community.CCXTConfigVersion.cmake DESTINATION ${CMAKE_INSTALL_DATADIR}/cmake/Community.CCXT)
 endfunction()
 
 # Add find_package() versioning support. The version for
-# generated Corpsoft.CCXTConfigVersion.cmake will be used from
+# generated Community.CCXTConfigVersion.cmake will be used from
 # last project() command. The version's compatibility is set between all
 # minor versions (as it was in prev. CCXT releases).
 function(ccxt_create_packaging_file)
     if(${CMAKE_VERSION} VERSION_LESS "3.14.0")
         write_basic_package_version_file(
-            ${CMAKE_CURRENT_BINARY_DIR}/Corpsoft.CCXTConfigVersion.cmake
+            ${CMAKE_CURRENT_BINARY_DIR}/Community.CCXTConfigVersion.cmake
             COMPATIBILITY SameMajorVersion
         )
     else()
         write_basic_package_version_file(
-            ${CMAKE_CURRENT_BINARY_DIR}/Corpsoft.CCXTConfigVersion.cmake
+            ${CMAKE_CURRENT_BINARY_DIR}/Community.CCXTConfigVersion.cmake
             COMPATIBILITY SameMajorVersion
             ARCH_INDEPENDENT
         )
