@@ -46,25 +46,22 @@ include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 set(TEST_MAIN_SRC test-main.cpp)
 add_library(test-main STATIC ${TEST_MAIN_SRC})
 target_link_libraries(test-main PUBLIC
-                                curl # Workaround since conan libcurl is not working
-                                #CONAN_PKG::libcurl
                                 CONAN_PKG::gtest
                                 CONAN_PKG::benchmark
                                 CONAN_PKG::ms-gsl
-                                CONAN_PKG::fmt
-                                CONAN_PKG::rapidjson)
+                                CONAN_PKG::fmt)
 
-ccxt_set_cxx(test-main ${ccxt_min_cxx_standard})
+bby_set_cxx(test-main ${bby_min_cxx_standard})
 
 # Adds a test.
-# Usage: add_ccxt_test(name srcs...)
-function(add_ccxt_test name)
+# Usage: add_bby_test(name srcs...)
+function(add_bby_test name)
   add_executable(${name} ${name}.cpp ${ARGN})
   target_link_libraries(${name} test-main)
 
   # Define if certain C++ features can be used.
   target_compile_options(${name} PRIVATE ${PEDANTIC_COMPILE_FLAGS})
-  if (CCXT_WERROR)
+  if (BBY_WERROR)
     target_compile_options(${name} PRIVATE ${WERROR_FLAG})
   endif ()
 
@@ -76,13 +73,13 @@ function(add_ccxt_test name)
   add_test(NAME ${name} COMMAND ${name})
 endfunction()
 
-add_ccxt_test(state_machine-test)
-add_ccxt_test(scope_guards-test)
-add_ccxt_test(one_thread_scheduler-test)
-add_ccxt_test(numeric-test)
-add_ccxt_test(metaprogram-test)
-add_ccxt_test(index_range-test)
-add_ccxt_test(date_handler-test)
-add_ccxt_test(byte_copy-test)
-add_ccxt_test(buffer_cast-test)
-add_ccxt_test(lru_cache-test)
+add_bby_test(state_machine-test)
+add_bby_test(scope_guard-test)
+add_bby_test(one_thread_scheduler-test)
+add_bby_test(numeric-test)
+add_bby_test(metaprogram-test)
+add_bby_test(index_range-test)
+add_bby_test(date_handler-test)
+add_bby_test(byte_copy-test)
+add_bby_test(buffer_cast-test)
+add_bby_test(lru_cache-test)

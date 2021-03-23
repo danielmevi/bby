@@ -1,9 +1,9 @@
 # This cmake module is meant to hold helper functions/macros
 # that make maintaining the cmake build system much easier.
-# This is especially helpful since ccxt needs to provide coverage
+# This is especially helpful since bby needs to provide coverage
 # for multiple versions of cmake.
 #
-# Any functions/macros should have a ccxt_* prefix to avoid problems
+# Any functions/macros should have a bby_* prefix to avoid problems
 if (CMAKE_VERSION VERSION_GREATER 3.10 OR CMAKE_VERSION VERSION_EQUAL 3.10)
     include_guard()
 else()
@@ -21,29 +21,29 @@ include(CheckCXXCompilerFlag)
 # Use GNUInstallDirs to provide the right locations on all platforms
 include(GNUInstallDirs)
 
-function(ccxt_set_cxx target min_cxx_standard)
+function(bby_set_cxx target min_cxx_standard)
     if (DEFINED CMAKE_CXX_STANDARD)
         if (${CMAKE_CXX_STANDARD} VERSION_LESS ${min_cxx_standard})
-            message(FATAL_ERROR "CCXT: Requires at least CXX standard ${min_cxx_standard}, user provided ${CMAKE_CXX_STANDARD}")
+            message(FATAL_ERROR "BBY: Requires at least CXX standard ${min_cxx_standard}, user provided ${CMAKE_CXX_STANDARD}")
         endif()
 
-        # Set the CCXT standard to what the client desires
-        set(CCXT_CXX_STANDARD "${CMAKE_CXX_STANDARD}")
+        # Set the BBY standard to what the client desires
+        set(BBY_CXX_STANDARD "${CMAKE_CXX_STANDARD}")
     else()
-        set(CCXT_CXX_STANDARD "${min_cxx_standard}" CACHE STRING "Use c++ standard")
+        set(BBY_CXX_STANDARD "${min_cxx_standard}" CACHE STRING "Use c++ standard")
     endif()
 
-    set(CCXT_CXX_STD "cxx_std_${CCXT_CXX_STANDARD}")
-    target_compile_features(${target} INTERFACE "${CCXT_CXX_STD}")
+    set(BBY_CXX_STD "cxx_std_${BBY_CXX_STANDARD}")
+    target_compile_features(${target} INTERFACE "${BBY_CXX_STD}")
     set(CMAKE_CXX_EXTENSIONS OFF)
 
-    set(CCXT_REQUIRED_FEATURE -fconcepts)
-    check_cxx_compiler_flag(${CCXT_REQUIRED_FEATURE} has_std_concepts)
+    set(BBY_REQUIRED_FEATURE -fconcepts)
+    check_cxx_compiler_flag(${BBY_REQUIRED_FEATURE} has_std_concepts)
     if (has_std_concepts)
-      target_compile_options(${target} INTERFACE ${CCXT_REQUIRED_FEATURE})
+      target_compile_options(${target} INTERFACE ${BBY_REQUIRED_FEATURE})
     else()
       message(FATAL_ERROR
-        "CCXT: Requires CXX standard ${min_cxx_standard} that supports "
+        "BBY: Requires CXX standard ${min_cxx_standard} that supports "
         "\"-fconcepts\", user provided ${CMAKE_CXX_STANDARD}")
     endif()
 
@@ -54,48 +54,48 @@ function(ccxt_set_cxx target min_cxx_standard)
     endif()
 endfunction()
 
-# Adding the CCXT.natvis files improves the debugging experience for users of this library.
-function(ccxt_add_native_visualizer_support)
+# Adding the bby.natvis files improves the debugging experience for users of this library.
+function(bby_add_native_visualizer_support)
     if (CMAKE_VERSION VERSION_GREATER 3.7.8)
         if (MSVC_IDE)
-            option(CCXT_VS_ADD_NATIVE_VISUALIZERS "Configure project to use Visual Studio native visualizers" TRUE)
+            option(BBY_VS_ADD_NATIVE_VISUALIZERS "Configure project to use Visual Studio native visualizers" TRUE)
         else()
-            set(CCXT_VS_ADD_NATIVE_VISUALIZERS FALSE CACHE INTERNAL "Native visualizers are Visual Studio extension" FORCE)
+            set(BBY_VS_ADD_NATIVE_VISUALIZERS FALSE CACHE INTERNAL "Native visualizers are Visual Studio extension" FORCE)
         endif()
 
         # add natvis file to the library so it will automatically be loaded into Visual Studio
-        if(CCXT_VS_ADD_NATIVE_VISUALIZERS)
-            target_sources(CCXT INTERFACE $<BUILD_INTERFACE:${CCXT_SOURCE_DIR}/CCXT.natvis>)
+        if(BBY_VS_ADD_NATIVE_VISUALIZERS)
+            target_sources(BBY INTERFACE $<BUILD_INTERFACE:${BBY_SOURCE_DIR}/BBY.natvis>)
         endif()
     endif()
 endfunction()
 
-function(ccxt_install_logic)
-    install(TARGETS CCXT EXPORT Community.CCXTConfig)
+function(bby_install_logic)
+    install(TARGETS BBY EXPORT Community.BBYConfig)
     install(
-        DIRECTORY include/ccxt
+        DIRECTORY include/bby
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     )
     # Make library importable by other projects
-    install(EXPORT Community.CCXTConfig NAMESPACE Community.CCXT:: DESTINATION ${CMAKE_INSTALL_DATADIR}/cmake/Community.CCXT)
-    export(TARGETS CCXT NAMESPACE Community.CCXT:: FILE Community.CCXTConfig.cmake)
+    install(EXPORT Community.BBYConfig NAMESPACE Community.BBY:: DESTINATION ${CMAKE_INSTALL_DATADIR}/cmake/Community.BBY)
+    export(TARGETS BBY NAMESPACE Community.BBY:: FILE Community.BBYConfig.cmake)
 
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Community.CCXTConfigVersion.cmake DESTINATION ${CMAKE_INSTALL_DATADIR}/cmake/Community.CCXT)
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Community.BBYConfigVersion.cmake DESTINATION ${CMAKE_INSTALL_DATADIR}/cmake/Community.BBY)
 endfunction()
 
 # Add find_package() versioning support. The version for
-# generated Community.CCXTConfigVersion.cmake will be used from
+# generated Community.bbyConfigVersion.cmake will be used from
 # last project() command. The version's compatibility is set between all
-# minor versions (as it was in prev. CCXT releases).
-function(ccxt_create_packaging_file)
+# minor versions (as it was in prev. bby releases).
+function(bby_create_packaging_file)
     if(${CMAKE_VERSION} VERSION_LESS "3.14.0")
         write_basic_package_version_file(
-            ${CMAKE_CURRENT_BINARY_DIR}/Community.CCXTConfigVersion.cmake
+            ${CMAKE_CURRENT_BINARY_DIR}/Community.BBYConfigVersion.cmake
             COMPATIBILITY SameMajorVersion
         )
     else()
         write_basic_package_version_file(
-            ${CMAKE_CURRENT_BINARY_DIR}/Community.CCXTConfigVersion.cmake
+            ${CMAKE_CURRENT_BINARY_DIR}/Community.BBYConfigVersion.cmake
             COMPATIBILITY SameMajorVersion
             ARCH_INDEPENDENT
         )

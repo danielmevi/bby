@@ -13,7 +13,29 @@ include(PreventInSourceBuilds)
 # Creates a library BBY which is an interface (header files only)
 add_library(BBY INTERFACE)
 
-include(conan.cmake)
+# Determine whether this is a standalone project or included by other projects
+set(BBY_STANDALONE_PROJECT OFF)
+if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+    set(BBY_STANDALONE_PROJECT ON)
+endif()
+
+# Set a default build type if none was specified
+if (CCXT_STANDALONE_PROJECT AND NOT CMAKE_BUILD_TYPE)
+  message(STATUS "Setting build type to 'RelWithDebInfo' as none was specified.")
+  set(CMAKE_BUILD_TYPE
+      RelWithDebInfo
+      CACHE STRING "Choose the type of build." FORCE)
+  # Set the possible values of build type for cmake-gui, ccmake
+  set_property(
+    CACHE CMAKE_BUILD_TYPE
+    PROPERTY STRINGS
+             "Debug"
+             "Release"
+             "MinSizeRel"
+             "RelWithDebInfo")
+endif()
+
+include(cmake/conan.cmake)
 
 conan_add_remote(
   NAME bincrafters
@@ -21,6 +43,7 @@ conan_add_remote(
 
 conan_cmake_run(
   REQUIRES gtest/1.10.0
+           benchmark/1.5.2
            fmt/7.1.0
            ms-gsl/3.1.0
   OPTIONS
@@ -36,11 +59,6 @@ conan_cmake_run(
 # whether BBY was added via `add_subdirectory` or `find_package`
 add_library(Community.BBY::BBY ALIAS BBY)
 
-# Determine whether this is a standalone project or included by other projects
-set(BBY_STANDALONE_PROJECT OFF)
-if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
-    set(BBY_STANDALONE_PROJECT ON)
-endif()
 
 ### Project options
 option(BBY_INSTALL "Generate and install BBY target" ${BBY_STANDALONE_PROJECT})

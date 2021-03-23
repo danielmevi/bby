@@ -1,22 +1,31 @@
-// Bby C++ Library - Memory copy utility Test
+// Bby C++ Library - Memory copy utility
 //
 // Copyright TBD
 //
 
 #pragma once
 
-// TODO: Add descritions
+#include "gsl/gsl"
+
+#include <type_traits>
+#include <cstddef>
+
+namespace bby {
+
+// ByteCopy: Utility function in charge to copy trivial types into a trivial
+// buffer castable to uint8_t, with a type system check and size checking check
+// with GSL::SPAN
 template <class T>
 typename std::enable_if<std::is_trivial<T>::value>::type ByteCopy(
-    gsl::span<uint8_t> destination, T const source)
+    gsl::span<std::byte> destination, T const source)
 {
   uint32_t shift{0};
 
-  for (std::ptrdiff_t index{sizeof(T) - 1};
-       index >= 0 && index <= destination.size();
-       --index, shift += 8)
+  for (std::ptrdiff_t index{0};
+       index < sizeof(T)  && index <= destination.size();
+       ++index, shift += 8)
   {
-    destination[index] = (source >> shift) & 0xFF;
+    destination[index] = static_cast<std::byte>((source >> shift) & 0xFF);
   }
 }
 
@@ -31,11 +40,8 @@ ByteCopy(Z* destination, T const source)
 
 
 
-
-/// @name CreateType
-/// @brief Portable and well enough for production JLR function to copy buffer
-/// bytes into built-in type
-/// @param[in] source
+// CreateType: Utility function in charge to construct a trivial type from a
+// trivial buffer with type system check and size check with GSL::SPAN
 template <class T>
 typename std::enable_if<std::is_trivial<T>::value, T>::type CreateType(
     gsl::span<uint8_t const> const source)
@@ -59,4 +65,6 @@ typename std::enable_if<std::is_trivial<T>::value && std::is_trivial<Z>::value,
 CreateType(const Z* const source)
 {
   return CreateType<T>({source, source + sizeof(T)});
+}
+
 }
