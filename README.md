@@ -1,5 +1,7 @@
-# myUtility
-Baby C++ library utilities
+[![Build Status](https://travis-ci.com/danielmevi/bby.svg?branch=master)](https://travis-ci.com/danielmevi/bby)
+
+# BBY C++ library utility
+Welcome to the Baby C++ library utilities
 
 The entire implementation is provided inline in the headers under the [bby](include/bby/bby.h). The implementation assumes a platform that implements C++20 support. Therefore the library can be manually added through the main header or by CMake.
 
