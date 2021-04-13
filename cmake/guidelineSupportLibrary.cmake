@@ -37,15 +37,17 @@ function(bby_set_cxx target min_cxx_standard)
     target_compile_features(${target} INTERFACE "${BBY_CXX_STD}")
     set(CMAKE_CXX_EXTENSIONS OFF)
 
-    set(BBY_REQUIRED_FEATURE -fconcepts)
-    check_cxx_compiler_flag(${BBY_REQUIRED_FEATURE} has_std_concepts)
-    if (has_std_concepts)
-      target_compile_options(${target} INTERFACE ${BBY_REQUIRED_FEATURE})
-    else()
-      message(FATAL_ERROR
-        "BBY: Requires CXX standard ${min_cxx_standard} that supports "
-        "\"-fconcepts\", user provided ${CMAKE_CXX_STANDARD}")
-    endif()
+    if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+        set(BBY_REQUIRED_FEATURE -fconcepts)
+        check_cxx_compiler_flag(${BBY_REQUIRED_FEATURE} has_std_concepts)
+        if (has_std_concepts)
+          target_compile_options(${target} INTERFACE ${BBY_REQUIRED_FEATURE})
+        else()
+          message(FATAL_ERROR
+            "BBY: Requires CXX standard ${min_cxx_standard} that supports "
+            "\"-fconcepts\", user provided ${CMAKE_CXX_STANDARD}")
+        endif()
+    endif ()
 
     if (CMAKE_BUILD_TYPE MATCHES ".*Deb.*")
       target_compile_options(${target} INTERFACE -DNDEBUG=1)

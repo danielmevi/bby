@@ -1,3 +1,7 @@
+#
+# Test CMake
+#
+
 set(CLANG_WARNINGS
     -Wall
     -Wextra # reasonable and standard
@@ -39,6 +43,8 @@ endif ()
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   set(PEDANTIC_COMPILE_FLAGS ${CLANG_WARNINGS})
   set(WERROR_FLAG -Werror)
+  set(CMAKE_CXX_CLANG_TIDY clang-tidy
+  -checks=-*,readability-*,clang-analizer-*,cppcoreguidelnes-*,performance-*,modernize-*,-modernize-use-trailing-return-type)
 endif ()
 
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
