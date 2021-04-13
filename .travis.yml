@@ -16,6 +16,9 @@ before_install:
   - export CXX=g++-10 CC=gcc-10
 jobs:
   include:
+    - stage: format
+      script:
+        - scripts/check_format.sh
     - stage: test
       script:
         - mkdir -p build
