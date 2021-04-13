@@ -16,38 +16,38 @@ auto constexpr Ethernet{5};
 auto constexpr Offboard{3};
 auto constexpr MaxQueueSize{64};
 auto constexpr MaxProfilesAvailable{10};
-}  // nameless namespace
+} // namespace
 
 namespace flush {
 
 // @brief Generic State Machine
 class StateMachine {
-    // TODO(thread): Make it thread safe by compile configuration
-    // TODO(config): Make it configurable and put in a different file
- public:
-    std::string next(std::string const &next_state) {
-        auto const current_node{SequenceNodes_.find(current_state_)};
-        if (current_node == SequenceNodes_.end()) {
-            // TODO(error): Make this check unit test (assert or similar)
-            // TODO(alloc): Ensure no memory allocation
-            return {"internal: " + current_state_ + "->" + next_state};
-        }
-
-        auto const &current_node_sequence{current_node->second};
-        auto const found{current_node_sequence.find(next_state)};
-        if (found == current_node_sequence.end()) {
-            // TODO(alloc): Ensure no memory allocation
-            return {"sequence: " + current_state_ + "->" + next_state};
-        }
-        current_state_ = next_state;
-        return {""};
+  // TODO(thread): Make it thread safe by compile configuration
+  // TODO(config): Make it configurable and put in a different file
+public:
+  std::string next(std::string const &next_state) {
+    auto const current_node{SequenceNodes_.find(current_state_)};
+    if (current_node == SequenceNodes_.end()) {
+      // TODO(error): Make this check unit test (assert or similar)
+      // TODO(alloc): Ensure no memory allocation
+      return {"internal: " + current_state_ + "->" + next_state};
     }
 
- private:
-    std::string current_state_{not_ready};
-    std::unordered_map<std::string, std::unordered_set<std::string>>
-        SequenceNodes_{{error, {end}},     {not_ready, {standby}},
-                       {standby, {ready}}, {ready, {setup}},
-                       {setup, {running}}, {running, {end}}};
+    auto const &current_node_sequence{current_node->second};
+    auto const found{current_node_sequence.find(next_state)};
+    if (found == current_node_sequence.end()) {
+      // TODO(alloc): Ensure no memory allocation
+      return {"sequence: " + current_state_ + "->" + next_state};
+    }
+    current_state_ = next_state;
+    return {""};
+  }
+
+private:
+  std::string current_state_{not_ready};
+  std::unordered_map<std::string, std::unordered_set<std::string>>
+      SequenceNodes_{{error, {end}},     {not_ready, {standby}},
+                     {standby, {ready}}, {ready, {setup}},
+                     {setup, {running}}, {running, {end}}};
 };
-}
+} // namespace flush

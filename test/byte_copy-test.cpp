@@ -98,4 +98,4 @@ TEST(UINTBuffer, Byte) {}
 
 TEST(Numeric, Byte) {}
 
-}
+} // namespace test

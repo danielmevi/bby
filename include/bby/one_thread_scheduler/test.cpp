@@ -3,12 +3,9 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-
-class CallbackMockContainer
-{
+class CallbackMockContainer {
 public:
-  class CallbackMock
-  {
+  class CallbackMock {
   public:
     // TODO(dmedinav): Change mockcallback to bool return type to better use of
     // gtest and reduce workarounds
@@ -24,17 +21,14 @@ public:
 std::unique_ptr<CallbackMockContainer::CallbackMock>
     CallbackMockContainer::g_callback_mock_obj;
 
-class CheckPeriodicEventsTest : public testing::Test
-{
+class CheckPeriodicEventsTest : public testing::Test {
 public:
-  void SetUp() override
-  {
+  void SetUp() override {
     CallbackMockContainer::g_callback_mock_obj =
         std::make_unique<CallbackMockContainer::CallbackMock>();
   }
 
-  void TearDown() override
-  {
+  void TearDown() override {
     // NOLINTNEXTLINE(clang-analyzer-optin.cplusplus.VirtualCall)
     CallbackMockContainer::g_callback_mock_obj = nullptr;
   }
@@ -48,8 +42,7 @@ constexpr auto g_cb_3_id{3};
 
 // Unit tests
 // NOLINTNEXTLINE
-TEST_F(CheckPeriodicEventsTest, TestPriorityQueueSequence)
-{
+TEST_F(CheckPeriodicEventsTest, TestPriorityQueueSequence) {
   std::chrono::milliseconds const delta{std::chrono::milliseconds(1)};
 
   scheduler::EventTimer const startTime(std::chrono::milliseconds(0));
@@ -82,12 +75,12 @@ TEST_F(CheckPeriodicEventsTest, TestPriorityQueueSequence)
   auto eventCB2{[=]() { return cB2(g_cb_2_id); }};
   auto eventCB3{[=]() { return cB3(g_cb_3_id); }};
 
-  eventQueue.emplace(
-      scheduler::PeriodicEvent::EPriority::high, startTime, timeout1, eventCB1);
-  eventQueue.emplace(
-      scheduler::PeriodicEvent::EPriority::low, startTime, timeout2, eventCB2);
-  eventQueue.emplace(
-      scheduler::PeriodicEvent::EPriority::high, startTime, timeout3, eventCB3);
+  eventQueue.emplace(scheduler::PeriodicEvent::EPriority::high, startTime,
+                     timeout1, eventCB1);
+  eventQueue.emplace(scheduler::PeriodicEvent::EPriority::low, startTime,
+                     timeout2, eventCB2);
+  eventQueue.emplace(scheduler::PeriodicEvent::EPriority::high, startTime,
+                     timeout3, eventCB3);
 
   // NOLINTNEXTLINE
   EXPECT_CALL(*CallbackMockContainer::g_callback_mock_obj, Callback1).Times(0);
@@ -97,8 +90,7 @@ TEST_F(CheckPeriodicEventsTest, TestPriorityQueueSequence)
   EXPECT_CALL(*CallbackMockContainer::g_callback_mock_obj, Callback3).Times(0);
   scheduler::launch(eventQueue, currentTime);
 
-  for (auto cnt{maxCount}; cnt != 0; --cnt)
-  {
+  for (auto cnt{maxCount}; cnt != 0; --cnt) {
     // NOLINTNEXTLINE
     EXPECT_CALL(*CallbackMockContainer::g_callback_mock_obj, Callback1())
         .WillOnce(testing::Return(true));
@@ -150,28 +142,25 @@ TEST_F(CheckPeriodicEventsTest, TestPriorityQueueSequence)
 }
 
 // NOLINTNEXTLINE
-TEST_F(CheckPeriodicEventsTest, EmptyEventContainer)
-{
+TEST_F(CheckPeriodicEventsTest, EmptyEventContainer) {
   scheduler::EventTimer currentTime(std::chrono::milliseconds(0));
   scheduler::PeriodicEventQueue periodicEventContainer;
 
   // NOLINTNEXTLINE
   EXPECT_EXIT(scheduler::launch(periodicEventContainer, currentTime),
-              ::testing::KilledBySignal(SIGABRT),
-              "");
+              ::testing::KilledBySignal(SIGABRT), "");
 }
 
 // NOLINTNEXTLINE
-TEST_F(CheckPeriodicEventsTest, EventNotSucceded)
-{
+TEST_F(CheckPeriodicEventsTest, EventNotSucceded) {
   scheduler::EventTimer const startTime(std::chrono::milliseconds(0));
   std::chrono::milliseconds const timeout{std::chrono::milliseconds(1)};
 
   auto eventCB{[] { return false; }};
 
   scheduler::PeriodicEventQueue eventQueue;
-  eventQueue.emplace(
-      scheduler::PeriodicEvent::EPriority::high, startTime, timeout, eventCB);
+  eventQueue.emplace(scheduler::PeriodicEvent::EPriority::high, startTime,
+                     timeout, eventCB);
 
   scheduler::EventTimer const currentTime(startTime +
                                           std::chrono::milliseconds(1));
@@ -180,8 +169,7 @@ TEST_F(CheckPeriodicEventsTest, EventNotSucceded)
 }
 
 // NOLINTNEXTLINE
-TEST_F(CheckPeriodicEventsTest, EventNextTimeoutChecks)
-{
+TEST_F(CheckPeriodicEventsTest, EventNextTimeoutChecks) {
   using namespace std::chrono_literals;
 
   constexpr auto eventTimeout1{std::chrono::milliseconds{10}};
@@ -190,15 +178,11 @@ TEST_F(CheckPeriodicEventsTest, EventNextTimeoutChecks)
   scheduler::EventTimer startTime(std::chrono::milliseconds(0));
   auto eventCB{[] { return true; }};
 
-  eventQueue.emplace(scheduler::PeriodicEvent::EPriority::high,
-                     startTime,
-                     eventTimeout1,
-                     eventCB);
+  eventQueue.emplace(scheduler::PeriodicEvent::EPriority::high, startTime,
+                     eventTimeout1, eventCB);
 
-  eventQueue.emplace(scheduler::PeriodicEvent::EPriority::low,
-                     startTime,
-                     eventTimeout2,
-                     eventCB);
+  eventQueue.emplace(scheduler::PeriodicEvent::EPriority::low, startTime,
+                     eventTimeout2, eventCB);
 
   {
     // Prioritized event 1
@@ -227,4 +211,3 @@ TEST_F(CheckPeriodicEventsTest, EventNextTimeoutChecks)
   // NOLINTNEXTLINE
   EXPECT_TRUE(eventQueue.empty());
 }
-

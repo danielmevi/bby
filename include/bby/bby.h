@@ -3,6 +3,6 @@
 // Copyright TBD
 //
 
-#pragma once 
+#pragma once
 
 #include "byte_copy/memcopy_utility.hpp"

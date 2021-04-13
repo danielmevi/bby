@@ -2,45 +2,38 @@
 //
 //
 
-
 #include "Scheduler.h"
 
 {
-namespace scheduler
-{
+  namespace scheduler {
 
-bool launch(PeriodicEventQueue& eventQueue, EventTimer const currentTime)
-{
-  Expects(!eventQueue.empty());
+  bool launch(PeriodicEventQueue &eventQueue, EventTimer const currentTime) {
+    Expects(!eventQueue.empty());
 
-  std::uint32_t eventErrors{0};
-  for (auto cnt{eventQueue.size()}; cnt != 0; --cnt)
-  {
-    auto event{eventQueue.top()};
+    std::uint32_t eventErrors{0};
+    for (auto cnt{eventQueue.size()}; cnt != 0; --cnt) {
+      auto event{eventQueue.top()};
 
-    if (event.NextTimeout() > currentTime)
-    {
-      break;  // first event in sorted container still due, exit.
+      if (event.NextTimeout() > currentTime) {
+        break; // first event in sorted container still due, exit.
+      }
+
+      const auto success{event()};
+      if (!success) {
+        ++eventErrors;
+      }
+
+      eventQueue.pop();
+      event.UpdateForNextTimeout();
+      // Push new periodic event and sort
+      eventQueue.push(std::move(event));
     }
 
-    const auto success{event()};
-    if (!success)
-    {
-      ++eventErrors;
+    if (eventErrors != 0) {
+      debug_console::print_ln("Periodic Event FAILED: ", eventErrors);
     }
 
-    eventQueue.pop();
-    event.UpdateForNextTimeout();
-    // Push new periodic event and sort
-    eventQueue.push(std::move(event));
+    return eventErrors == 0;
   }
 
-  if (eventErrors != 0)
-  {
-    debug_console::print_ln("Periodic Event FAILED: ", eventErrors);
-  }
-
-  return eventErrors == 0;
-}
-
-}  // namespace scheduler
+  } // namespace scheduler

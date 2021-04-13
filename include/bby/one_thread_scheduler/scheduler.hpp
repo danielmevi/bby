@@ -3,7 +3,6 @@
 //
 //
 
-
 #pragma once
 
 #include <gsl/gsl>
@@ -13,8 +12,7 @@
 #include <tuple>
 #include <vector>
 
-namespace scheduler
-{
+namespace scheduler {
 
 using Clock = std::chrono::steady_clock;
 using EventTimer = std::chrono::time_point<Clock>;
@@ -35,25 +33,16 @@ public:
   ///
   /// @details Enum Class with high and low priorities for the two priorities
   ///          PeriodicEvent can have
-  enum class EPriority
-  {
-    high,
-    low
-  };
+  enum class EPriority { high, low };
 
   PeriodicEvent(EPriority priority, EventTimer startClock,
                 std::chrono::milliseconds timeout, Callback callback)
-      : _priority{priority}
-      , _timeout{timeout}
-      , _nextTimeout{startClock + timeout}
-      , _functor{std::move(callback)}
-  {
-  }
+      : _priority{priority}, _timeout{timeout},
+        _nextTimeout{startClock + timeout}, _functor{std::move(callback)} {}
 
   /// @brief Functor execution of the callback for the specific event
   /// @return bool
-  bool operator()()
-  {
+  bool operator()() {
     auto const result{_functor()};
     return result;
   }
@@ -68,12 +57,12 @@ public:
   /// @brief GetPriority will be used to prioritze PeriodicEvent execution with
   ///        the same timeout. This function returns the PeriodicEvent priority
   /// @return Enum Class EPriority
-  EPriority const& Priority() const { return _priority; }
+  EPriority const &Priority() const { return _priority; }
 
   /// @brief GetNextTimeout will be used to prioritze PeriodicEvent execution.
   ///        This function returns the PeriodicEvent next timeout
   /// @return std::chrono::time_point<std::chrono::steady_clock>
-  EventTimer const& NextTimeout() const { return _nextTimeout; }
+  EventTimer const &NextTimeout() const { return _nextTimeout; }
 
 private:
   /// @brief Value holding the priority to define priority against type of
@@ -101,11 +90,9 @@ private:
 /// @brief Provide ordering for PeriodicEvent objects in PeriodicEventQueue
 ///
 /// @note Satisfies Compare concept
-struct PeriodicEventComparison
-{
-  auto operator()(PeriodicEvent const& leftEvent,
-                  PeriodicEvent const& rightEvent) const
-  {
+struct PeriodicEventComparison {
+  auto operator()(PeriodicEvent const &leftEvent,
+                  PeriodicEvent const &rightEvent) const {
     return std::tie(leftEvent.NextTimeout(), leftEvent.Priority()) >
            std::tie(rightEvent.NextTimeout(), rightEvent.Priority());
   }
@@ -123,6 +110,6 @@ using PeriodicEventQueue =
 ///
 /// @details Periodically checks if event callback needs to be called and
 /// schedules next occurrence
-bool launch(PeriodicEventQueue& eventQueue, EventTimer currentTime);
+bool launch(PeriodicEventQueue &eventQueue, EventTimer currentTime);
 
-}  // namespace scheduler
+} // namespace scheduler
