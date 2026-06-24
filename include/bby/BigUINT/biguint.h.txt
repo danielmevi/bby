@@ -1,0 +1,156 @@
+#include <algorithm>
+#include <array>
+#include <climits>
+#include <iostream>
+#include <vector>
+#if __cplusplus >= 202302L
+#include <ranges>
+#include <print>
+#endif
+
+class BigUINT {
+    using T = unsigned long long;
+    std::array<T, 9> data_{0};
+
+   public:
+    BigUINT() = default;
+    BigUINT(const T in) { data_[0] = in; }
+    auto getUnit(const int x) { return data_[x]; }
+
+    auto operator[](const int x) const {
+        //std::print("DEBUG: x {}\n", x);
+        switch (x) {
+            case 0 ... 64:
+                return (data_[8] & (1ULL << (64 - x))) ? 1 : 0;
+            case 65 ... 128:
+                return (data_[7] & (1ULL << (128 - x))) ? 1 : 0;
+            case 129 ... 192:
+                return (data_[6] & (1ULL << (192 - x))) ? 1 : 0;
+            case 193 ... 256:
+                //std::print("DEBUG: data:{} - index:{} - shift:{:X} - filter:{}\n",
+                  //         data_[0], 256 - x, 1ULL << (256 - x),
+                    //       data_[0] & (1ULL << (256 - x)));
+                return (data_[5] & (1ULL << (256 - x))) ? 1 : 0;
+            case 257 ... 320:
+                return (data_[4] & (1ULL << (320 - x))) ? 1 : 0;
+            case 321 ... 384:
+                return (data_[3] & (1ULL << (384 - x))) ? 1 : 0;
+            case 385 ... 448:
+                return (data_[2] & (1ULL << (448 - x))) ? 1 : 0;
+            case 449 ... 512:
+                return (data_[1] & (1ULL << (512 - x))) ? 1 : 0;
+            case 513 ... 576:
+                return (data_[0] & (1ULL << (576 - x))) ? 1 : 0;
+        }
+        throw;
+    }
+
+    BigUINT& operator<<(const int in) {
+        auto previous_carry = 0;
+        for (auto x = 0; x < in; ++x) {
+            for (auto& data_n : data_) {
+                const auto local_carry = (0x8000000000000000 & data_n) ? 1 : 0;
+                data_n = data_n << 1;
+                data_n += previous_carry;
+                previous_carry = local_carry;
+            }
+        }
+        return *this;
+    }
+
+    BigUINT& operator+=(const BigUINT in) {
+        auto carry = 0;
+        for (unsigned x = 0; x < data_.size(); ++x) {
+            data_[x] += in.data_[x] + carry;
+            carry = data_[x] < in.data_[x];
+        }
+        return *this;
+    }
+
+    BigUINT& operator*=(const T in) {
+        BigUINT multiplier = *this;
+        *this = 0;
+        for (unsigned x = 0, filter = 1; x < sizeof(T) * CHAR_BIT;
+             ++x, filter = filter << 1) {
+            const auto in_bit = (in & filter) ? true : false;
+            if (in_bit) *this += multiplier;
+            multiplier = multiplier << 1;
+            // std::print(
+            //     "DEBUG: x:{}, bit:{}, filter:{}, multiplier:{},
+            //     data[0]:{}\n", x, in_bit, filter, multiplier.data_[0],
+            //     data_[0]);
+        }
+
+        return *this;
+    }
+
+    std::string string() const {
+        auto& binary = *this;
+        std::string num{'0'};;
+        for (unsigned x = 0; x <= sizeof(data_) * CHAR_BIT; ++x) {
+            int carry = binary[x];
+            //std::print("DEBUG: x:{}, carry:{}, ", x, carry);
+            for (int i = num.size() - 1; i >= 0; --i) {
+                int digit = (num[i] - '0') * 2 + carry;
+                num[i] = (digit % 10) + '0';
+                carry = digit / 10;
+            }
+            //std::print("carry:{}, num:{}, ", carry, num);
+            while (carry) {
+                num.insert(num.begin(), (carry % 10) + '0');
+                carry /= 10;
+            }
+            //std::print("num:{}\n", num);
+        }
+
+        return num;
+    }
+};
+
+template <>
+struct std::formatter<BigUINT> {
+    constexpr auto parse(format_parse_context& ctx) { return ctx.begin(); }
+    auto format(BigUINT& in, format_context& ctx) const {
+        const auto decimal_string = in.string();
+        return std::format_to(ctx.out(), "{}\n{:X},{:X},{:X},{:X}",
+                              decimal_string, in.getUnit(3), in.getUnit(2),
+                              in.getUnit(1), in.getUnit(0));
+    }
+};
+
+BigUINT factorial(const int in) {
+    if ((in > 100) | (in <= 0)) {
+        return {0};
+    }
+
+    BigUINT result{1};
+    for (auto x = 2; x <= in; ++x) {
+        // std::print("DEBUG1: {}: {}\n", x, result);
+        result *= x;
+        // std::print("DEBUG2: {}: {}\n", x, result);
+    }
+
+    return result;
+}
+
+int main() {
+    auto result = factorial(58);
+    std::print("{}\n", result);
+
+    //BigUINT value0 = 2;
+    //std::print("{},{},{},{}\n", value0[224], value0[223], value0[222],
+    //           value0[225]);
+
+    /*
+    BigUINT value1 = 1;
+    std::print("shift:: {}\n", value1);
+    value1 = value1 << 64;
+    std::print("{}\n", value1);
+    */
+
+    // BigUINT value2 = 0x8000000000000000ULL;  // result = 0xDE0B6B3A76400000
+    //BigUINT value2 = 0x2ULL;
+    // std::print("multiplication: {}\n", value2);
+    //value2 *= 0x2ULL;
+    //std::print("{}\n", value2);
+}
