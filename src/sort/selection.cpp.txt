@@ -1,0 +1,26 @@
+// Selection Sort
+// This sort algorithm is based on setting the first item as the minimum, and then
+// on each itertion finding the real minimum to swap it. And then continue to the
+// next unsorted item to repeat the process
+#include <array>
+#include <print>
+
+void sort(auto& input) {
+    for(unsigned i1 = 0; i1 != input.size(); ++i1){
+        auto& minimum = input[i1];
+        for(unsigned i2 = i1 + 1; i2 != input.size(); ++i2){
+            auto& current = input[i2];
+            if(current < minimum){
+                std::swap(current, minimum);
+            }
+        }
+
+    }
+}
+
+int main() {
+    std::array input{1, 8, 4, 6, 3, 7, 0, 9, 6, 8, 3, 7, 5, 6};
+    sort(input);
+
+    std::print("{}", input);
+}

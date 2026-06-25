@@ -1,4 +1,7 @@
 // Insertion Sort
+// This algorithm is based on sorting from left to right,
+// on each iteration on each smalled value appears, will be 
+// swaped backward until it gets inserted into its correct position
 #include <array>
 #include <print>
 

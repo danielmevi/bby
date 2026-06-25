@@ -1,4 +1,8 @@
 // Bubble Sort
+// This sort algorithm is based on finding on each iteration 
+// the biggest value and swaped all the way to the end of the 
+// container. On each iteration same operations will be done until
+// all biggest values has been bubbled up to the top of the container
 #include <array>
 #include <print>
 
