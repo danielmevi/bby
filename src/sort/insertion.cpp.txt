@@ -1,0 +1,28 @@
+// Insertion Sort
+#include <array>
+#include <print>
+
+void sort(auto& input) {
+    for (unsigned i1 = 1; i1 != input.size(); ++i1) {
+        auto& prev = input[i1 - 1];
+        auto& current = input[i1];
+        if (prev > current) {
+            for (unsigned i2 = i1; i2 != 0; --i2) {
+                auto& prev2 = input[i2 - 1];
+                auto& current2 = input[i2];
+                if (prev2 > current2) {
+                    std::swap(prev2, current2);
+                } else {
+                    break;
+                }
+            }
+        }
+    }
+}
+
+int main() {
+    std::array input{1, 8, 4, 6, 3, 7, 0, 9, 6, 8, 3, 7, 5, 6};
+    sort(input);
+
+    std::print("{}", input);
+}
